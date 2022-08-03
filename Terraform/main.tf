@@ -1,5 +1,5 @@
 provider "aws" {
-  region     = var.aws-region
+  region = var.aws-region
 }
 
 resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
@@ -18,9 +18,20 @@ resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
 
 terraform {
   backend "s3" {
-    encrypt = true
-    key     = "terraform.tfstate"
-    region  = var.aws-region
+    encrypt        = true
+    key            = "terraform.tfstate"
+    region         = var.aws-region
     dynamodb_table = "terraform-state-lock-dynamo"
   }
 }
+
+module "vpc" {
+  source             = "./vpc"
+  name               = var.name
+  cidr               = var.cidr
+  private_subnets    = var.private_subnets
+  public_subnets     = var.public_subnets
+  availability_zones = var.availability_zones
+  environment        = var.environment
+}
+

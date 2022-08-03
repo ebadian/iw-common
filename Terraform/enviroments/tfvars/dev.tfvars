@@ -1,1 +1,2 @@
-name = "my-demo"
+name        = "my-demo"
+environment = "dev"
