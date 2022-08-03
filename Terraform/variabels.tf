@@ -32,3 +32,8 @@ variable "environment" {
   description = "the name of your environment, e.g. \"prod\""
   default     = "dev"
 }
+
+variable "container_port" {
+  description = "The port where the Docker is exposed"
+  default     = 8000
+}
