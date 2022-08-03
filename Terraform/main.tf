@@ -21,6 +21,6 @@ terraform {
     encrypt = true
     key     = "terraform.tfstate"
     region  = var.aws-region
-   # dynamodb_table = "terraform-state-lock-dynamo"
+    dynamodb_table = "terraform-state-lock-dynamo"
   }
 }
