@@ -37,3 +37,13 @@ variable "container_port" {
   description = "The port where the Docker is exposed"
   default     = 8000
 }
+
+variable "tsl_certificate_arn" {
+  description = "The ARN of the certificate that the ALB uses for https"
+}
+
+variable "health_check_path" {
+  description = "Http path for task health check"
+  default     = "/health"
+}
+
