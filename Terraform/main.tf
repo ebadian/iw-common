@@ -53,3 +53,9 @@ module "security_groups" {
 #  alb_tls_cert_arn    = var.tsl_certificate_arn
 #  health_check_path   = var.health_check_path
 #}
+
+module "ecr" {
+  source = "./ecr"
+  name = var.name
+  environment = var.environment
+}

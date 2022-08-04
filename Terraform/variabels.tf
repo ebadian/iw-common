@@ -38,9 +38,9 @@ variable "container_port" {
   default     = 8000
 }
 
-variable "tsl_certificate_arn" {
-  description = "The ARN of the certificate that the ALB uses for https"
-}
+#variable "tsl_certificate_arn" {
+#  description = "The ARN of the certificate that the ALB uses for https"
+#}
 
 variable "health_check_path" {
   description = "Http path for task health check"
