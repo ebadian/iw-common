@@ -42,7 +42,7 @@
 #       with:
 #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-name: 'Terraform'
+name: 'IW-Common'
 
 on:
   push:
@@ -54,8 +54,31 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
-    name: 'Terraform'
+  init:
+    name: 'Terraform init'
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Run
+        run: |
+          cd Terraform
+          echo "Run Terraform init ..."
+    
+  plan:
+    name: 'Terraform Plan'
+    needs: [ init ]
     runs-on: ubuntu-latest
     environment: production
 
@@ -63,19 +86,54 @@ jobs:
     defaults:
       run:
         shell: bash
-
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v3
+     # Checkout the repository to the GitHub Actions runner
+       - name: Checkout
+         uses: actions/checkout@v3
+       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+       - name: Setup Terraform
+         uses: hashicorp/setup-terraform@v1
+         with:
+           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+       - name: Run
+         run: |       
+           cd Terraform
+           echo "Run terraform plan ..."
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-    - run: cd Terraform
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Run
-      run: |
-        make clean init plan ENV=dev
+  apply:
+    name: 'Terraform apply'
+    needs: [ init, plan ]
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Run
+        run: |
+          cd Terraform
+          echo "Run terraform apply ..."
+  notify:
+    name: 'Notify team/projects'
+    needs: [ init, plan, apply ]
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: 'Notify queues'
+        run: |
+          echo "notifying all queues"
